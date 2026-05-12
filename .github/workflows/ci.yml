@@ -1,0 +1,56 @@
+name: Vite React CI
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  build-test:
+    runs-on:
+      - self-hosted
+      - ostad
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      # CODE CHECKOUT
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # SETUP NODE
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # INSTALL DEPENDENCIES
+      - name: Install dependencies
+        run: npm install
+
+      # LINT CHECK
+      - name: Run linter
+        run: npm run lint
+
+      # TYPESCRIPT CHECK
+      - name: TypeScript Check
+        run: npx tsc --noEmit
+
+      # TEST RUN
+      - name: Run tests
+        run: npm test -- --run
+
+      # BUILD PROJECT
+      - name: Build project
+        run: npm run build
+
+      # UPLOAD ARTIFACT
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-react-build
+          path: dist/
