@@ -12,7 +12,8 @@ jobs:
   build-test:
     runs-on:
       - self-hosted
-      - ostad
+      - Linux
+      - x64
     strategy:
       matrix:
         node-version: [20.x]
